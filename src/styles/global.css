@@ -2,21 +2,12 @@
     box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+    min-height: 100%;
+}
+
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-}
-
-header {
-    padding: 20px 32px;
-    border-bottom: 1px solid #e0e0e0;
-}
-
-nav {
-    display: flex;
-    gap: 24px;
-}
-
-main {
-    padding: 32px;
 }
