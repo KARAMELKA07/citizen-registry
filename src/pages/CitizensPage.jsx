@@ -1,24 +1,181 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
+
+import {
+    Box,
+    Chip,
+    MenuItem,
+    Paper,
+    Stack,
+    TextField,
+    Typography,
+} from '@mui/material';
+
+import { DataGrid } from '@mui/x-data-grid';
+
 import { citizens } from '../data/citizens.js';
+import { appeals } from '../data/appeals.js';
+
+const columns = [
+    {
+        field: 'id',
+        headerName: 'ID',
+        width: 110,
+    },
+    {
+        field: 'fullName',
+        headerName: 'ФИО',
+        minWidth: 230,
+        flex: 1,
+        renderCell: ({ row }) => (
+            <Link to={`/citizens/${row.id}`}>
+                {row.fullName}
+            </Link>
+        ),
+    },
+    {
+        field: 'birthDate',
+        headerName: 'Дата рождения',
+        width: 150,
+    },
+    {
+        field: 'region',
+        headerName: 'Регион',
+        minWidth: 180,
+        flex: 1,
+    },
+    {
+        field: 'phone',
+        headerName: 'Телефон',
+        width: 180,
+    },
+    {
+        field: 'appealsCount',
+        headerName: 'Обращения',
+        type: 'number',
+        width: 130,
+    },
+    {
+        field: 'recordStatus',
+        headerName: 'Статус',
+        width: 140,
+        renderCell: ({ value }) => (
+            <Chip
+                label={value === 'active' ? 'Активный' : 'Архивный'}
+                color={value === 'active' ? 'success' : 'default'}
+                size="small"
+                variant="outlined"
+            />
+        ),
+    },
+];
+
+const regions = [...new Set(citizens.map(c => c.region))];
 
 export default function CitizensPage() {
+    const [search, setSearch] = useState('');
+    const [region, setRegion] = useState('all');
+    const [status, setStatus] = useState('all');
+
+    const rows = citizens.map((citizen) => ({
+        ...citizen,
+        fullName: `${citizen.lastName} ${citizen.firstName} ${citizen.middleName}`.trim(),
+        appealsCount: appeals.filter(
+            (appeal) => appeal.citizenId === citizen.id
+        ).length,
+    }));
+
+    const filteredRows = rows.filter((citizen) => {
+        const matchesSearch = citizen.fullName
+            .toLowerCase()
+            .includes(search.trim().toLowerCase());
+
+        const matchesRegion =
+            region === 'all' || citizen.region === region;
+
+        const matchesStatus =
+            status === 'all' || citizen.recordStatus === status;
+
+        return matchesSearch && matchesRegion && matchesStatus;
+    });
+
     return (
-        <section>
-            <h2>Картотека граждан</h2>
+        <Box>
+            <Typography variant="h5" fontWeight={600} mb={1}>
+                Картотека граждан
+            </Typography>
 
-            <p>Всего граждан: {citizens.length}</p>
+            <Typography color="text.secondary" mb={3}>
+                Просмотр и поиск зарегистрированных граждан
+            </Typography>
 
-            <ul>
-                {citizens.map((citizen) => (
-                    <li key={citizen.id}>
-                        <Link to={`/citizens/${citizen.id}`}>
-                            {citizen.lastName} {citizen.firstName} {citizen.middleName}
-                        </Link>
-                        {' — '}
-                        {citizen.region}
-                    </li>
-                ))}
-            </ul>
-        </section>
+            <Paper sx={{ p: 3, borderRadius: 3 }}>
+                <Stack
+                    direction={{ xs: 'column', md: 'row' }}
+                    spacing={2}
+                    mb={3}
+                >
+                    <TextField
+                        label="Поиск по ФИО"
+                        size="small"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        sx={{ minWidth: 220 }}
+                    />
+
+                    <TextField
+                        select
+                        label="Регион"
+                        size="small"
+                        value={region}
+                        onChange={(e) => setRegion(e.target.value)}
+                        sx={{ minWidth: 200 }}
+                    >
+                        <MenuItem value="all">Все регионы</MenuItem>
+
+                        {regions.map((item) => (
+                            <MenuItem key={item} value={item}>
+                                {item}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+
+                    <TextField
+                        select
+                        label="Статус"
+                        size="small"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        sx={{ minWidth: 160 }}
+                    >
+                        <MenuItem value="all">Все статусы</MenuItem>
+                        <MenuItem value="active">Активные</MenuItem>
+                        <MenuItem value="archived">Архивные</MenuItem>
+                    </TextField>
+                </Stack>
+
+                <Typography variant="body2" color="text.secondary" mb={2}>
+                    Найдено: {filteredRows.length} из {citizens.length}
+                </Typography>
+
+                <Box sx={{ height: 460, width: '100%' }}>
+                    <DataGrid
+                        rows={filteredRows}
+                        columns={columns}
+                        pageSizeOptions={[5, 10, 25]}
+                        initialState={{
+                            pagination: {
+                                paginationModel: {
+                                    page: 0,
+                                    pageSize: 5,
+                                },
+                            },
+                        }}
+                        disableRowSelectionOnClick
+                        sx={{ border: 0 }}
+                    />
+                </Box>
+            </Paper>
+        </Box>
     );
 }
