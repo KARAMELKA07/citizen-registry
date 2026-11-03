@@ -12,21 +12,26 @@ import {
 } from '@mui/material';
 
 import { DataGrid } from '@mui/x-data-grid';
+import { ruRU } from '@mui/x-data-grid/locales';
 
 import { citizens } from '../data/citizens.js';
 import { appeals } from '../data/appeals.js';
+
+
 
 const columns = [
     {
         field: 'id',
         headerName: 'ID',
-        width: 110,
+        minWidth: 90,
+        maxWidth: 145,
+        flex: 0.6,
     },
     {
         field: 'fullName',
         headerName: 'ФИО',
         minWidth: 230,
-        flex: 1,
+        flex: 1.8,
         renderCell: ({ row }) => (
             <Link to={`/citizens/${row.id}`}>
                 {row.fullName}
@@ -36,29 +41,39 @@ const columns = [
     {
         field: 'birthDate',
         headerName: 'Дата рождения',
-        width: 150,
+        minWidth: 140,
+        flex: 0.9,
+        renderCell: ({ value }) =>
+            value ? value.split('-').reverse().join('.') : '—',
     },
     {
         field: 'region',
         headerName: 'Регион',
         minWidth: 180,
-        flex: 1,
+        flex: 1.4,
     },
     {
         field: 'phone',
         headerName: 'Телефон',
-        width: 180,
+        minWidth: 160,
+        flex: 1,
     },
     {
         field: 'appealsCount',
         headerName: 'Обращения',
         type: 'number',
-        width: 130,
+        minWidth: 125,
+        maxWidth: 170,
+        flex: 0.7,
+        align: 'left',
+        headerAlign: 'left',
     },
     {
         field: 'recordStatus',
         headerName: 'Статус',
-        width: 140,
+        minWidth: 125,
+        maxWidth: 175,
+        flex: 0.8,
         renderCell: ({ value }) => (
             <Chip
                 label={value === 'active' ? 'Активный' : 'Архивный'}
@@ -69,6 +84,8 @@ const columns = [
         ),
     },
 ];
+
+
 
 const regions = [...new Set(citizens.map(c => c.region))];
 
@@ -99,28 +116,30 @@ export default function CitizensPage() {
         return matchesSearch && matchesRegion && matchesStatus;
     });
 
+
     return (
-        <Box>
-            <Typography variant="h5" fontWeight={600} mb={1}>
-                Картотека граждан
-            </Typography>
+        <Box sx={{ width: '100%', minWidth: 0 }}>
 
-            <Typography color="text.secondary" mb={3}>
-                Просмотр и поиск зарегистрированных граждан
-            </Typography>
 
-            <Paper sx={{ p: 3, borderRadius: 3 }}>
+            <Paper
+                sx={{
+                    p: { xs: 2, md: 3 },
+                    borderRadius: 3,
+                    minWidth: 0,
+                }}
+            >
+                {/* Поиск и фильтры */}
                 <Stack
                     direction={{ xs: 'column', md: 'row' }}
                     spacing={2}
-                    mb={3}
+                    sx={{ mb: 3 }}
                 >
                     <TextField
                         label="Поиск по ФИО"
                         size="small"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        sx={{ minWidth: 220 }}
+                        sx={{ width: { xs: '100%', md: 240 } }}
                     />
 
                     <TextField
@@ -129,7 +148,7 @@ export default function CitizensPage() {
                         size="small"
                         value={region}
                         onChange={(e) => setRegion(e.target.value)}
-                        sx={{ minWidth: 200 }}
+                        sx={{ width: { xs: '100%', md: 200 } }}
                     >
                         <MenuItem value="all">Все регионы</MenuItem>
 
@@ -146,7 +165,7 @@ export default function CitizensPage() {
                         size="small"
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
-                        sx={{ minWidth: 160 }}
+                        sx={{ width: { xs: '100%', md: 170 } }}
                     >
                         <MenuItem value="all">Все статусы</MenuItem>
                         <MenuItem value="active">Активные</MenuItem>
@@ -154,11 +173,25 @@ export default function CitizensPage() {
                     </TextField>
                 </Stack>
 
-                <Typography variant="body2" color="text.secondary" mb={2}>
+                {/* Количество найденных граждан */}
+                <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 2.5 }}
+                >
                     Найдено: {filteredRows.length} из {citizens.length}
                 </Typography>
 
-                <Box sx={{ height: 460, width: '100%' }}>
+                {/* Таблица */}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                        minHeight: 230,
+                        maxHeight: 450,
+                    }}
+                >
                     <DataGrid
                         rows={filteredRows}
                         columns={columns}
@@ -171,11 +204,29 @@ export default function CitizensPage() {
                                 },
                             },
                         }}
+                        localeText={{
+                            ...ruRU.components.MuiDataGrid.defaultProps.localeText,
+                            noRowsLabel:
+                                'Граждане не найдены. Измените параметры поиска.',
+                            noResultsOverlayLabel:
+                                'По заданным условиям граждане не найдены.',
+                        }}
                         disableRowSelectionOnClick
-                        sx={{ border: 0 }}
+                        sx={{
+                            border: 0,
+                            '--DataGrid-overlayHeight': '160px',
+                            '& a': {
+                                color: 'primary.main',
+                                textDecoration: 'none',
+                            },
+                            '& a:hover': {
+                                textDecoration: 'underline',
+                            },
+                        }}
                     />
                 </Box>
             </Paper>
         </Box>
     );
+
 }

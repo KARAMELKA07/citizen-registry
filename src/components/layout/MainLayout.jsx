@@ -18,6 +18,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutlined';
+import CloseIcon from '@mui/icons-material/Close';
 
 const drawerWidth = 240;
 const menuItems = [
@@ -55,10 +56,21 @@ export default function MainLayout() {
                 color: '#FFFFFF',
             }}
         >
-            <Toolbar>
+            <Toolbar sx={{ justifyContent: 'space-between' }}>
                 <Typography variant="h6" fontWeight={700}>
                     Citizen Registry
                 </Typography>
+
+                <IconButton
+                    onClick={() => setMobileOpen(false)}
+                    aria-label="Закрыть меню"
+                    sx={{
+                        display: { xs: 'inline-flex', lg: 'none' },
+                        color: '#FFFFFF',
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
             </Toolbar>
 
             <Divider sx={{ borderColor: 'rgba(255,255,255,0.15)' }} />
@@ -107,12 +119,13 @@ export default function MainLayout() {
             <AppBar
                 position="fixed"
                 sx={{
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    ml: { sm: `${drawerWidth}px` },
+                    width: { lg: `calc(100% - ${drawerWidth}px)` },
+                    ml: { lg: `${drawerWidth}px` },
                     bgcolor: 'background.paper',
                     color: 'text.primary',
                     boxShadow: 'none',
                     borderBottom: '1px solid #E5EAF1',
+
                 }}
             >
                 <Toolbar>
@@ -123,7 +136,7 @@ export default function MainLayout() {
                         onClick={() => setMobileOpen(true)}
                         sx={{
                             mr: 2,
-                            display: { sm: 'none' },
+                            display: { lg: 'none' },
                         }}
                     >
                         <MenuIcon />
@@ -138,8 +151,8 @@ export default function MainLayout() {
             <Box
                 component="nav"
                 sx={{
-                    width: { sm: drawerWidth },
-                    flexShrink: { sm: 0 },
+                    width: { lg: drawerWidth },
+                    flexShrink: { lg: 0 },
                 }}
             >
                 <Drawer
@@ -147,12 +160,15 @@ export default function MainLayout() {
                     open={mobileOpen}
                     onClose={() => setMobileOpen(false)}
                     sx={{
-                        display: { xs: 'block', sm: 'none' },
+                        display: { xs: 'block', lg: 'none' },
                         '& .MuiDrawer-paper': {
-                            width: drawerWidth,
+                            width: { xs: '100vw', sm: 360 },
+                            height: '100dvh',
+                            maxWidth: '100vw',
                             border: 0,
                         },
                     }}
+
                 >
                     {drawerContent}
                 </Drawer>
@@ -160,7 +176,7 @@ export default function MainLayout() {
                 <Drawer
                     variant="permanent"
                     sx={{
-                        display: { xs: 'none', sm: 'block' },
+                        display: { xs: 'none', lg: 'block' },
                         '& .MuiDrawer-paper': {
                             width: drawerWidth,
                             border: 0,

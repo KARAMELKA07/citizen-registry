@@ -15,6 +15,7 @@
 | Поле | Тип | Ввод | Обязательное |
 |---|---|---|---|
 | id | string | Авто | — |
+| photoUrl | string | Фото (путь к изображению) | Нет |
 | lastName | string | Текст | Да |
 | firstName | string | Текст | Да |
 | middleName | string | Текст | Нет |

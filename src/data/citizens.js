@@ -1,6 +1,7 @@
 export const citizens = [
     {
         id: 'CIT-001',
+        photoUrl: '/avatars/anna.jpg',
         lastName: 'Иванова',
         firstName: 'Анна',
         middleName: 'Сергеевна',
@@ -27,6 +28,7 @@ export const citizens = [
     },
     {
         id: 'CIT-002',
+        photoUrl: '/avatars/maxim.png',
         lastName: 'Петров',
         firstName: 'Максим',
         middleName: 'Игоревич',
@@ -34,6 +36,7 @@ export const citizens = [
         gender: 'male',
         recordStatus: 'active',
         createdAt: '2026-09-16T09:30:00Z',
+
 
         phone: '+7 900 000-00-02',
         additionalPhone: '',
