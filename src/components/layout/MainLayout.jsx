@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 
@@ -16,14 +17,15 @@ import {
 } from '@mui/material';
 
 import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutlined';
-import CloseIcon from '@mui/icons-material/Close';
 
-const drawerWidth = 240;
+const drawerWidth = 216;
+
 const menuItems = [
     {
-        title: 'Главная',
+        title: 'Обзор',
         path: '/',
         icon: <DashboardOutlinedIcon />,
     },
@@ -38,27 +40,38 @@ export default function MainLayout() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const { pathname } = useLocation();
 
-    let pageTitle = 'Панель управления';
+    let pageTitle = 'Обзор';
 
     if (pathname === '/citizens') {
         pageTitle = 'Картотека граждан';
     } else if (pathname.startsWith('/citizens/')) {
         pageTitle = 'Карточка гражданина';
     } else if (pathname !== '/') {
-        pageTitle = 'Citizen Registry';
+        pageTitle = 'Реестр граждан';
     }
 
     const drawerContent = (
         <Box
             sx={{
                 height: '100%',
-                bgcolor: '#172B4D',
-                color: '#FFFFFF',
+                bgcolor: 'background.paper',
+                color: 'text.primary',
             }}
         >
-            <Toolbar sx={{ justifyContent: 'space-between' }}>
-                <Typography variant="h6" fontWeight={700}>
-                    Citizen Registry
+            {/* Название приложения */}
+            <Toolbar
+                sx={{
+                    minHeight: '64px !important',
+                    px: '20px !important',
+                    justifyContent: 'space-between',
+                }}
+            >
+                <Typography
+                    variant="subtitle1"
+                    fontWeight={700}
+                    sx={{ letterSpacing: '-0.3px' }}
+                >
+                    Реестр граждан
                 </Typography>
 
                 <IconButton
@@ -66,16 +79,17 @@ export default function MainLayout() {
                     aria-label="Закрыть меню"
                     sx={{
                         display: { xs: 'inline-flex', lg: 'none' },
-                        color: '#FFFFFF',
+                        color: 'text.secondary',
                     }}
                 >
                     <CloseIcon />
                 </IconButton>
             </Toolbar>
 
-            <Divider sx={{ borderColor: 'rgba(255,255,255,0.15)' }} />
+            <Divider />
 
-            <List sx={{ p: 1.5 }}>
+            {/* Основная навигация */}
+            <List sx={{ px: 1.5, py: 2 }}>
                 {menuItems.map((item) => (
                     <ListItemButton
                         key={item.path}
@@ -84,30 +98,54 @@ export default function MainLayout() {
                         end={item.path === '/'}
                         onClick={() => setMobileOpen(false)}
                         sx={{
-                            borderRadius: 2,
+                            minHeight: 44,
+                            px: 1.5,
                             mb: 0.5,
-                            color: '#C6D5ED',
-
-                            '&.active': {
-                                bgcolor: 'rgba(255,255,255,0.15)',
-                                color: '#FFFFFF',
-                            },
+                            borderRadius: '10px',
+                            color: 'text.secondary',
 
                             '&:hover': {
-                                bgcolor: 'rgba(255,255,255,0.1)',
+                                bgcolor: '#F1F5F9',
+                                color: 'text.primary',
+                            },
+
+                            '&.active': {
+                                bgcolor: '#EFF6FF',
+                                color: 'primary.main',
+                            },
+
+                            '&.active:hover': {
+                                bgcolor: '#DBEAFE',
+                            },
+
+                            '&.active .MuiTypography-root': {
+                                fontWeight: 600,
+                            },
+
+                            '&.Mui-focusVisible': {
+                                outline: '2px solid #2563EB',
+                                outlineOffset: 2,
                             },
                         }}
                     >
                         <ListItemIcon
                             sx={{
-                                minWidth: 40,
+                                minWidth: 36,
                                 color: 'inherit',
                             }}
                         >
                             {item.icon}
                         </ListItemIcon>
 
-                        <ListItemText primary={item.title} />
+                        <ListItemText
+                            primary={item.title}
+                            slotProps={{
+                                primary: {
+                                    fontSize: 14,
+                                    fontWeight: 500,
+                                },
+                            }}
+                        />
                     </ListItemButton>
                 ))}
             </List>
@@ -116,6 +154,7 @@ export default function MainLayout() {
 
     return (
         <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+            {/* Верхняя панель */}
             <AppBar
                 position="fixed"
                 sx={{
@@ -124,62 +163,74 @@ export default function MainLayout() {
                     bgcolor: 'background.paper',
                     color: 'text.primary',
                     boxShadow: 'none',
-                    borderBottom: '1px solid #E5EAF1',
-
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
                 }}
             >
-                <Toolbar>
+                <Toolbar
+                    sx={{
+                        minHeight: '64px !important',
+                        px: { xs: 2, sm: 3 },
+                    }}
+                >
                     <IconButton
-                        color="inherit"
                         edge="start"
                         aria-label="Открыть меню"
                         onClick={() => setMobileOpen(true)}
                         sx={{
                             mr: 2,
                             display: { lg: 'none' },
+                            color: 'text.primary',
                         }}
                     >
                         <MenuIcon />
                     </IconButton>
 
-                    <Typography variant="h6" fontWeight={600}>
+                    <Typography variant="subtitle1" fontWeight={600}>
                         {pageTitle}
                     </Typography>
                 </Toolbar>
             </AppBar>
 
+            {/* Боковая панель */}
             <Box
                 component="nav"
+                aria-label="Основная навигация"
                 sx={{
                     width: { lg: drawerWidth },
                     flexShrink: { lg: 0 },
                 }}
             >
+                {/* Телефоны и планшеты */}
                 <Drawer
                     variant="temporary"
                     open={mobileOpen}
                     onClose={() => setMobileOpen(false)}
                     sx={{
                         display: { xs: 'block', lg: 'none' },
+
                         '& .MuiDrawer-paper': {
                             width: { xs: '100vw', sm: 360 },
-                            height: '100dvh',
                             maxWidth: '100vw',
+                            height: '100dvh',
                             border: 0,
                         },
                     }}
-
                 >
                     {drawerContent}
                 </Drawer>
 
+                {/* Широкие экраны */}
                 <Drawer
                     variant="permanent"
                     sx={{
                         display: { xs: 'none', lg: 'block' },
+
                         '& .MuiDrawer-paper': {
                             width: drawerWidth,
-                            border: 0,
+                            boxSizing: 'border-box',
+                            borderRight: '1px solid',
+                            borderColor: 'divider',
                         },
                     }}
                 >
@@ -187,12 +238,13 @@ export default function MainLayout() {
                 </Drawer>
             </Box>
 
+            {/* Содержимое текущей страницы */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
                     minWidth: 0,
-                    p: { xs: 2, md: 3 },
+                    p: { xs: 2, sm: 3 },
                 }}
             >
                 <Toolbar />

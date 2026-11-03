@@ -16,6 +16,7 @@ import { ruRU } from '@mui/x-data-grid/locales';
 
 import { citizens } from '../data/citizens.js';
 import { appeals } from '../data/appeals.js';
+import { statusStyles } from '../app/statusStyles.js';
 
 
 
@@ -77,9 +78,12 @@ const columns = [
         renderCell: ({ value }) => (
             <Chip
                 label={value === 'active' ? 'Активный' : 'Архивный'}
-                color={value === 'active' ? 'success' : 'default'}
                 size="small"
-                variant="outlined"
+                sx={{
+                    ...statusStyles[value],
+                    fontWeight: 600,
+                    borderRadius: '8px',
+                }}
             />
         ),
     },
@@ -124,7 +128,7 @@ export default function CitizensPage() {
             <Paper
                 sx={{
                     p: { xs: 2, md: 3 },
-                    borderRadius: 3,
+                    borderRadius: '16px',
                     minWidth: 0,
                 }}
             >

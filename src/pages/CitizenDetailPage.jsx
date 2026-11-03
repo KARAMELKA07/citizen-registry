@@ -24,6 +24,7 @@ import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
 
 import { citizens } from '../data/citizens.js';
 import { appeals } from '../data/appeals.js';
+import { statusStyles } from '../app/statusStyles.js';
 
 const genderLabels = {
     male: 'Мужской',
@@ -48,13 +49,6 @@ const statusLabels = {
     in_progress: 'В работе',
     resolved: 'Завершено',
     rejected: 'Отклонено',
-};
-
-const statusColors = {
-    new: 'info',
-    in_progress: 'warning',
-    resolved: 'success',
-    rejected: 'default',
 };
 
 const categoryLabels = {
@@ -233,7 +227,7 @@ export default function CitizenDetailPage() {
                     mb: 2,
                     px: 2,
                     py: 1,
-                    borderRadius: 2,
+                    borderRadius: '8px',
                     fontWeight: 600,
                     textTransform: 'none',
                     borderColor: 'transparent',
@@ -249,7 +243,7 @@ export default function CitizenDetailPage() {
                 <Paper
                     sx={{
                         p: { xs: 2, md: 3 },
-                        borderRadius: 3,
+                        borderRadius: '16px',
                     }}
                 >
                     <Box
@@ -272,7 +266,7 @@ export default function CitizenDetailPage() {
                                         position: 'relative',
                                         width: 'min(100%, 200px)',
                                         height: 200,
-                                        borderRadius: 3,
+                                        borderRadius: '16px',
                                         bgcolor: '#E5EDFA',
                                         color: 'primary.main',
                                         fontSize: 54,
@@ -337,27 +331,27 @@ export default function CitizenDetailPage() {
                                         ID: {citizen.id}
                                     </Typography>
 
+
                                     <Chip
                                         label={
                                             citizen.recordStatus === 'active'
                                                 ? 'Активный'
                                                 : 'Архивный'
                                         }
-                                        color={
-                                            citizen.recordStatus === 'active'
-                                                ? 'success'
-                                                : 'default'
-                                        }
-                                        variant="outlined"
+                                        size="small"
                                         sx={{
+                                            ...statusStyles[citizen.recordStatus],
                                             width: '100%',
                                             height: 36,
+                                            fontWeight: 600,
+                                            borderRadius: '8px',
                                             '& .MuiChip-label': {
                                                 width: '100%',
                                                 textAlign: 'center',
                                             },
                                         }}
                                     />
+
                                 </Box>
                             </Stack>
                         </Box>
@@ -421,7 +415,7 @@ export default function CitizenDetailPage() {
                 <Paper
                     sx={{
                         p: { xs: 2, md: 3 },
-                        borderRadius: 3,
+                        borderRadius: '16px',
                         minWidth: 0,
                     }}
                 >
@@ -444,11 +438,14 @@ export default function CitizenDetailPage() {
                         <Chip
                             label={`Всего: ${citizenAppeals.length}`}
                             size="small"
-                            color="primary"
-                            variant="outlined"
                             sx={{
                                 ml: 'auto',
                                 flexShrink: 0,
+                                bgcolor: '#F1F5F9',
+                                color: '#64748B',
+                                fontWeight: 500,
+                                borderRadius: '8px',
+                                height: 28,
                             }}
                         />
                     </Box>
@@ -484,15 +481,21 @@ export default function CitizenDetailPage() {
 
                                             <TableCell>
                                                 <Chip
-                                                    label={
-                                                        statusLabels[appeal.status] ||
-                                                        'Не указан'
-                                                    }
-                                                    color={
-                                                        statusColors[appeal.status] ||
-                                                        'default'
-                                                    }
+                                                    label={statusLabels[appeal.status] || 'Не указан'}
                                                     size="small"
+                                                    sx={{
+                                                        ...statusStyles[appeal.status],
+                                                        width: 116,
+                                                        height: 28,
+                                                        borderRadius: '8px',
+                                                        fontWeight: 600,
+                                                        justifyContent: 'center',
+                                                        '& .MuiChip-label': {
+                                                            width: '100%',
+                                                            px: 1,
+                                                            textAlign: 'center',
+                                                        },
+                                                    }}
                                                 />
                                             </TableCell>
 

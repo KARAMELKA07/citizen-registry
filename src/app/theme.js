@@ -1,26 +1,69 @@
+
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
     palette: {
         mode: 'light',
+
         primary: {
-            main: '#3263A9',
+            main: '#2563EB',
+            dark: '#1D4ED8',
+            light: '#EFF6FF',
         },
+
         background: {
-            default: '#F6F8FC',
+            default: '#F5F7FB',
             paper: '#FFFFFF',
         },
+
         text: {
-            primary: '#1E293B',
+            primary: '#0F172A',
             secondary: '#64748B',
         },
+
+        divider: '#E2E8F0',
     },
+
     typography: {
         fontFamily: '"Roboto", sans-serif',
+
+        button: {
+            textTransform: 'none',
+            fontWeight: 600,
+        },
     },
 
     shape: {
         borderRadius: 10,
+    },
+
+    components: {
+        MuiTabs: {
+            styleOverrides: {
+                indicator: {
+                    height: 3,
+                    borderRadius: 3,
+                },
+            },
+        },
+
+        MuiTab: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    minHeight: 44,
+
+                    '&:hover': {
+                        color: '#2563EB',
+                    },
+
+                    '&.Mui-selected': {
+                        fontWeight: 600,
+                    },
+                },
+            },
+        },
     },
 });
 
