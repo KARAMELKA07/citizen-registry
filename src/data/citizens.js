@@ -1,3 +1,4 @@
+
 export const citizens = [
     {
         id: 'CIT-001',
@@ -16,16 +17,28 @@ export const citizens = [
         preferredContact: 'email',
         contactComment: '',
 
-        region: 'Москва',
-        city: 'Москва',
-        street: 'Лесная',
-        house: '12',
-        apartment: '8',
+        registrationAddress: {
+            region: 'Москва',
+            city: 'Москва',
+            street: 'Лесная',
+            house: '12',
+            apartment: '8',
+        },
+
         sameAsRegistration: true,
-        livingAddress: '',
+
+        residentialAddress: {
+            region: 'Москва',
+            city: 'Москва',
+            street: 'Лесная',
+            house: '12',
+            apartment: '8',
+        },
+
         educationLevel: 'higher',
         notes: '',
     },
+
     {
         id: 'CIT-002',
         photoUrl: '/avatars/maxim.png',
@@ -37,23 +50,34 @@ export const citizens = [
         recordStatus: 'active',
         createdAt: '2026-09-16T09:30:00Z',
 
-
         phone: '+7 900 000-00-02',
         additionalPhone: '',
         email: 'maxim.petrov@example.com',
         preferredContact: 'phone',
         contactComment: '',
 
-        region: 'Московская область',
-        city: 'Химки',
-        street: 'Молодёжная',
-        house: '5',
-        apartment: '27',
+        registrationAddress: {
+            region: 'Московская область',
+            city: 'Химки',
+            street: 'Молодёжная',
+            house: '5',
+            apartment: '27',
+        },
+
         sameAsRegistration: false,
-        livingAddress: 'Москва, ул. Садовая, д. 10',
+
+        residentialAddress: {
+            region: 'Москва',
+            city: 'Москва',
+            street: 'Садовая',
+            house: '10',
+            apartment: '',
+        },
+
         educationLevel: 'vocational',
         notes: '',
     },
+
     {
         id: 'CIT-003',
         lastName: 'Орлова',
@@ -70,13 +94,24 @@ export const citizens = [
         preferredContact: 'phone',
         contactComment: '',
 
-        region: 'Тверская область',
-        city: 'Тверь',
-        street: 'Центральная',
-        house: '21',
-        apartment: '4',
+        registrationAddress: {
+            region: 'Тверская область',
+            city: 'Тверь',
+            street: 'Центральная',
+            house: '21',
+            apartment: '4',
+        },
+
         sameAsRegistration: true,
-        livingAddress: '',
+
+        residentialAddress: {
+            region: 'Тверская область',
+            city: 'Тверь',
+            street: 'Центральная',
+            house: '21',
+            apartment: '4',
+        },
+
         educationLevel: 'secondary',
         notes: '',
     },

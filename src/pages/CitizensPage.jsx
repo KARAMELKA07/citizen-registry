@@ -14,7 +14,7 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import { ruRU } from '@mui/x-data-grid/locales';
 
-import { citizens } from '../data/citizens.js';
+import { getCitizens } from '../data/citizenStorage.js';
 import { appeals } from '../data/appeals.js';
 import { statusStyles } from '../app/statusStyles.js';
 
@@ -81,8 +81,6 @@ const columns = [
                 size="small"
                 sx={{
                     ...statusStyles[value],
-                    fontWeight: 600,
-                    borderRadius: '8px',
                 }}
             />
         ),
@@ -91,18 +89,29 @@ const columns = [
 
 
 
-const regions = [...new Set(citizens.map(c => c.region))];
-
 export default function CitizensPage() {
+    const [citizens] = useState(getCitizens);
+
+    const regions = [
+        ...new Set(
+            citizens.map(c => c.registrationAddress.region).filter(Boolean)
+        ),
+    ];
+
     const [search, setSearch] = useState('');
     const [region, setRegion] = useState('all');
     const [status, setStatus] = useState('all');
 
     const rows = citizens.map((citizen) => ({
         ...citizen,
-        fullName: `${citizen.lastName} ${citizen.firstName} ${citizen.middleName}`.trim(),
+        region: citizen.registrationAddress.region,
+        fullName: [
+            citizen.lastName,
+            citizen.firstName,
+            citizen.middleName,
+        ].filter(Boolean).join(' '),
         appealsCount: appeals.filter(
-            (appeal) => appeal.citizenId === citizen.id
+            appeal => appeal.citizenId === citizen.id
         ).length,
     }));
 

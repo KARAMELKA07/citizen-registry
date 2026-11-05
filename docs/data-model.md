@@ -23,6 +23,7 @@
 | gender | string | Список | Нет |
 | recordStatus | string | Список | Да |
 | createdAt | string (datetime) | Авто | — |
+| educationLevel | string | Список | Нет |
 
  Контактные данные
 
@@ -34,22 +35,36 @@
 | preferredContact | string | Список | Нет |
 | contactComment | string | Многострочный текст | Нет |
 
-Адрес и дополнительные сведения
+
+ Адрес и дополнительные сведения
 
 | Поле | Тип | Ввод | Обязательное |
 |---|---|---|---|
-| region | string | Список | Да |
+| registrationAddress | Address | Группа полей | Да |
+| sameAsRegistration | boolean | Checkbox | Нет |
+| residentialAddress | Address | Группа полей | Нет |
+| notes | string | Многострочный текст | Нет |
+
+ Структура адреса (Address)
+
+| Поле | Тип | Ввод | Обязательное |
+|---|---|---|---|
+| region | string | Список / текст | Да для регистрации |
 | city | string | Текст | Нет |
 | street | string | Текст | Нет |
 | house | string | Текст | Нет |
 | apartment | string | Текст | Нет |
-| sameAsRegistration | boolean | Checkbox | Нет |
-| livingAddress | string | Многострочный текст | Нет |
-| educationLevel | string | Список | Нет |
-| notes | string | Многострочный текст | Нет |
 
-Если адрес проживания совпадает с адресом регистрации,
-отдельное поле livingAddress можно не заполнять.
+ Адрес регистрации и адрес проживания используют
+ одинаковую структуру Address.
+
+ Если sameAsRegistration = true, адрес проживания
+ автоматически копируется из адреса регистрации.
+
+ В режиме просмотра оба адреса отображаются
+ одной строкой. В режиме редактирования используются
+ отдельные поля региона, города, улицы, дома и квартиры.
+
 
 ## 2. Обращения (appeals)
 
