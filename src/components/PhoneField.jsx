@@ -1,6 +1,6 @@
 import { NumberFormatBase, usePatternFormat } from 'react-number-format';
 import { TextField } from '@mui/material';
-import { phoneDigits } from '../hooks/useCitizenEditor.js';
+import { phoneDigits } from '../utils/citizenForm.js';
 
 export default function PhoneField({
     label,

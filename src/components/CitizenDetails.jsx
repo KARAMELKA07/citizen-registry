@@ -1,8 +1,9 @@
 import { Box, Button, IconButton, Tab, Tabs, Tooltip, Typography } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import CitizenEditFields from './CitizenEditFields.jsx';
 import { formatAddress } from '../data/addressUtils.js';
-import useCitizenEditor from '../hooks/useCitizenEditor.js';
+import { deleteActionStyle, editActionStyle } from '../app/actionStyles.js';
 
 const genderLabels = {
     male: 'Мужской',
@@ -67,8 +68,8 @@ function InfoRow({ label, value }) {
         </Box>
     );
 }
-export default function CitizenDetails({ citizen, onSaved }) {
-    const { tab, setTab, isEditing, draft, errors, startEditing, cancelEditing, updateField, handleChange, handleSave } = useCitizenEditor(citizen, onSaved);
+export default function CitizenDetails({ citizen, editor, onDelete }) {
+    const { tab, setTab, isEditing, draft, errors, startEditing, cancelEditing, updateField, handleChange, handleSave, isSaving } = editor;
 
     const registrationAddress = formatAddress(
         citizen.registrationAddress
@@ -146,139 +147,142 @@ export default function CitizenDetails({ citizen, onSaved }) {
 
 
     return (
-    <Box
-        component="form"
-        noValidate
-        onSubmit={handleSave}
-        sx={{ minWidth: 0 }}
-    >
         <Box
-            sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                mb: 2.5,
-                borderBottom: '1px solid',
-                borderColor: 'divider',
-            }}
-        >
-            <Tabs
-                value={tab}
-                onChange={(_event, value) => setTab(value)}
-                variant="scrollable"
-                scrollButtons={false}
-                aria-label="Разделы карточки гражданина"
-                sx={{
-                    flex: 1,
-                    minWidth: 0,
-                    '& .MuiTab-root': {
-                        minWidth: 0,
-                        px: { xs: 1.25, sm: 2 },
-                    },
-                    '& .MuiTab-root:first-of-type': {
-                        pl: 0,
-                    },
-                }}
-            >
-                {sections.map((section, index) => (
-                    <Tab
-                        key={section.title}
-                        id={`citizen-tab-${index}`}
-                        aria-controls={`citizen-panel-${index}`}
-                        label={section.title}
-                    />
-                ))}
-            </Tabs>
-
-            {!isEditing && (
-                <Tooltip title="Редактировать карточку">
-                    <IconButton
-                        type="button"
-                        onClick={startEditing}
-                        aria-label="Редактировать карточку"
-                        sx={{
-                            color: 'text.secondary',
-                            borderRadius: '8px',
-                            flexShrink: 0,
-                            '&:hover': {
-                                color: 'primary.main',
-                                bgcolor: 'primary.light',
-                            },
-                        }}
-                    >
-                        <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-            )}
-        </Box>
-
-        <Box
-            role="tabpanel"
-            id={`citizen-panel-${tab}`}
-            aria-labelledby={`citizen-tab-${tab}`}
+            component="form"
+            noValidate
+            onSubmit={handleSave}
             sx={{ minWidth: 0 }}
         >
-            {isEditing ? (
-                <CitizenEditFields
-                    tab={tab}
-                    draft={draft}
-                    errors={errors}
-                    updateField={updateField}
-                    handleChange={handleChange}
-                    educationLabels={educationLabels}
-                />
-            ) : (
-                sections[tab].fields.map(field => (
-                    <InfoRow
-                        key={field.label}
-                        label={field.label}
-                        value={field.value}
-                    />
-                ))
-            )}
-        </Box>
-
-        {isEditing && (
             <Box
                 sx={{
                     display: 'flex',
-                    justifyContent: 'flex-end',
-                    flexWrap: 'wrap',
-                    gap: 1.5,
-                    mt: 3,
-                    pt: 2,
-                    borderTop: '1px solid',
+                    alignItems: 'center',
+                    gap: 1,
+                    mb: 2.5,
+                    borderBottom: '1px solid',
                     borderColor: 'divider',
                 }}
             >
-                {errors.form && (
-                    <Typography
-                        color="error"
-                        role="alert"
-                        sx={{ width: '100%' }}
-                    >
-                        {errors.form}
-                    </Typography>
+                <Tabs
+                    value={tab}
+                    onChange={(_event, value) => setTab(value)}
+                    variant="scrollable"
+                    scrollButtons={false}
+                    aria-label="Разделы карточки гражданина"
+                    sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        '& .MuiTab-root': {
+                            minWidth: 0,
+                            px: { xs: 1.25, sm: 2 },
+                        },
+                        '& .MuiTab-root:first-of-type': {
+                            pl: 0,
+                        },
+                    }}
+                >
+                    {sections.map((section, index) => (
+                        <Tab
+                            key={section.title}
+                            id={`citizen-tab-${index}`}
+                            aria-controls={`citizen-panel-${index}`}
+                            label={section.title}
+                        />
+                    ))}
+                </Tabs>
+
+                {!isEditing && (
+                    <>
+                    <Tooltip title="Редактировать карточку">
+                        <IconButton
+                            type="button"
+                            onClick={startEditing}
+                            aria-label="Редактировать карточку"
+                            sx={editActionStyle}
+                        >
+                            <EditOutlinedIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    {onDelete && (
+                        <Tooltip title="Удалить гражданина">
+                            <IconButton type="button" onClick={onDelete} aria-label="Удалить гражданина" sx={deleteActionStyle}>
+                                <DeleteOutlineIcon fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                    </>
                 )}
-
-                <Button
-                    type="button"
-                    variant="outlined"
-                    onClick={cancelEditing}
-                    sx={{ borderRadius: '8px' }}
-                >
-                    Отмена
-                </Button>
-
-                <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{ borderRadius: '8px' }}
-                >
-                    Сохранить
-                </Button>
             </Box>
-        )}
-    </Box>
+
+            <Box
+                role="tabpanel"
+                id={`citizen-panel-${tab}`}
+                aria-labelledby={`citizen-tab-${tab}`}
+                sx={{ minWidth: 0 }}
+            >
+                {isEditing ? (
+                    <CitizenEditFields
+                        tab={tab}
+                        draft={draft}
+                        errors={errors}
+                        updateField={updateField}
+                        handleChange={handleChange}
+                        educationLabels={educationLabels}
+                    />
+                ) : (
+                    sections[tab].fields.map(field => (
+                        <InfoRow
+                            key={field.label}
+                            label={field.label}
+                            value={field.value}
+                        />
+                    ))
+                )}
+            </Box>
+
+            {isEditing && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        flexWrap: 'wrap',
+                        gap: 1.5,
+                        mt: 3,
+                        pt: 2,
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                    }}
+                >
+                    {errors.form && (
+                        <Typography
+                            color="error"
+                            role="alert"
+                            sx={{ width: '100%' }}
+                        >
+                            {errors.form}
+                        </Typography>
+                    )}
+
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={cancelEditing}
+                        disabled={isSaving}
+                        sx={{ borderRadius: '8px' }}
+                    >
+                        Отмена
+                    </Button>
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        disabled={isSaving}
+                        sx={{ borderRadius: '8px' }}
+                    >
+                        Сохранить
+                    </Button>
+                </Box>
+            )}
+        </Box>
     );
 }

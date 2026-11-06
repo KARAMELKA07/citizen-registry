@@ -1,3 +1,10 @@
+import { createDemoAppeals } from './demoData.js';
+
+export function getAppeals(citizens) {
+    const citizenIds = new Set(citizens.map(citizen => citizen.id));
+    return appeals.filter(appeal => citizenIds.has(appeal.citizenId));
+}
+
 export const appeals = [
     {
         id: 'APP-001',
@@ -59,4 +66,5 @@ export const appeals = [
         dueDate: '',
         result: 'Обращение отклонено как дублирующее.',
     },
+    ...createDemoAppeals(),
 ];

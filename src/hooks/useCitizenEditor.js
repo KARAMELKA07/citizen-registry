@@ -1,203 +1,151 @@
-import { useState } from 'react';
-import { saveCitizen } from '../data/citizenStorage.js';
+import { useEffect, useRef, useState } from 'react';
+import { createCitizen, saveCitizen } from '../data/citizenStorage.js';
+import { deletePhoto, savePhoto } from '../data/photoStorage.js';
+import { hasCitizenChanges, prepareCitizen, validateCitizen, validatePhoto } from '../utils/citizenForm.js';
 
-export function phoneDigits(phone = '') {
-    const text = String(phone).trim();
-    const digits = text.replace(/\D/g, '');
-
-    if (text.startsWith('+7')) {
-        return digits.slice(1, 11);
-    }
-
-    if (digits.length === 11 && /^[78]/.test(digits)) {
-        return digits.slice(1);
-    }
-
-    return digits.slice(0, 10);
-}
-
-function formatPhone(phone) {
-    const digits = phoneDigits(phone);
-
-    if (!digits) return '';
-
-    return `+7 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 8)}-${digits.slice(8, 10)}`;
-}
-
-export default function useCitizenEditor(citizen, onSaved) {
+export default function useCitizenEditor(citizen, onSaved, isNew = false, onCancel) {
     const [tab, setTab] = useState(0);
-    const [isEditing, setIsEditing] = useState(false);
-    const [draft, setDraft] = useState(null);
+    const [isEditing, setIsEditing] = useState(isNew);
+    const [draft, setDraft] = useState(isNew ? citizen : null);
     const [errors, setErrors] = useState({});
+    const [photo, setPhoto] = useState(null);
+    const [photoRemoved, setPhotoRemoved] = useState(false);
+    const [photoError, setPhotoError] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    const saving = useRef(false);
+    const allowNavigation = useRef(false);
+    const isDirty = isEditing && hasCitizenChanges(citizen, draft, photo, photoRemoved);
+
+    useEffect(() => {
+        return () => {
+            if (photo?.url) URL.revokeObjectURL(photo.url);
+        };
+    }, [photo]);
+
+    function selectPhoto(file) {
+        if (!file) return;
+        const error = validatePhoto(file);
+        if (error) {
+            setPhotoError(error);
+            return;
+        }
+        setPhoto({ file, url: URL.createObjectURL(file) });
+        setPhotoRemoved(false);
+        setPhotoError('');
+    }
+
+    function removePhoto() {
+        setPhoto(null);
+        setPhotoRemoved(true);
+        setPhotoError('');
+    }
+
+    function clearPhotoError() {
+        setPhotoError('');
+    }
 
     function startEditing() {
+        allowNavigation.current = false;
+        setPhoto(null);
+        setPhotoRemoved(false);
+        setPhotoError('');
         setDraft({ ...citizen });
         setErrors({});
         setIsEditing(true);
     }
 
     function cancelEditing() {
+        allowNavigation.current = true;
+        setPhoto(null);
+        setPhotoRemoved(false);
+        setPhotoError('');
+        if (isNew) {
+            onCancel();
+            return;
+        }
         setDraft(null);
         setErrors({});
         setIsEditing(false);
     }
 
-
     function updateField(name, value) {
         setDraft(previous => {
             if (name.includes('.')) {
                 const [addressType, field] = name.split('.');
-
-                const updatedAddress = {
-                    ...previous[addressType],
-                    [field]: value,
-                };
-
-                if (
-                    addressType === 'registrationAddress' &&
-                    previous.sameAsRegistration
-                ) {
-                    return {
-                        ...previous,
-                        registrationAddress: updatedAddress,
-                        residentialAddress: { ...updatedAddress },
-                    };
+                const updatedAddress = { ...previous[addressType], [field]: value };
+                if (addressType === 'registrationAddress' && previous.sameAsRegistration) {
+                    return { ...previous, registrationAddress: updatedAddress, residentialAddress: { ...updatedAddress } };
                 }
-
-                return {
-                    ...previous,
-                    [addressType]: updatedAddress,
-                };
+                return { ...previous, [addressType]: updatedAddress };
             }
-
             if (name === 'sameAsRegistration' && value) {
-                return {
-                    ...previous,
-                    sameAsRegistration: true,
-                    residentialAddress: { ...previous.registrationAddress },
-                };
+                return { ...previous, sameAsRegistration: true, residentialAddress: { ...previous.registrationAddress } };
             }
-
-            return {
-                ...previous,
-                [name]: value,
-            };
+            return { ...previous, [name]: value };
         });
-
-        setErrors(previous => ({
-            ...previous,
-            [name]: '',
-        }));
+        setErrors(previous => ({ ...previous, [name]: '' }));
     }
 
     function handleChange(event) {
         updateField(event.target.name, event.target.value);
     }
 
-
-    function handleSave(event) {
+    async function handleSave(event) {
         event.preventDefault();
-
-        if (!draft) return;
-
-        const newErrors = {};
-
-        if (!draft.lastName.trim()) {
-            newErrors.lastName = 'Укажите фамилию';
-        }
-
-        if (!draft.firstName.trim()) {
-            newErrors.firstName = 'Укажите имя';
-        }
-
-        if (!draft.recordStatus) {
-            newErrors.recordStatus = 'Выберите статус';
-        }
-
-        if (!draft.phone.trim()) {
-            newErrors.phone = 'Укажите номер телефона';
-        } else if (phoneDigits(draft.phone).length !== 10) {
-            newErrors.phone = 'Введите 10 цифр после +7';
-        }
-
-        if (
-            draft.additionalPhone.trim() &&
-            phoneDigits(draft.additionalPhone).length !== 10
-        ) {
-            newErrors.additionalPhone = 'Введите 10 цифр после +7';
-        }
-
-        if (
-            draft.email.trim() &&
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.email.trim())
-        ) {
-            newErrors.email = 'Введите корректный email';
-        }
-
-        if (!draft.registrationAddress.region.trim()) {
-            newErrors['registrationAddress.region'] =
-                'Укажите регион регистрации';
-        }
-
-        if (
-            !draft.sameAsRegistration &&
-            !draft.residentialAddress.region.trim()
-        ) {
-            newErrors['residentialAddress.region'] =
-                'Укажите регион проживания';
-        }
-
+        if (!draft || saving.current || photoError) return;
+        const newErrors = validateCitizen(draft);
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length > 0) {
-            if (
-                newErrors.lastName ||
-                newErrors.firstName ||
-                newErrors.recordStatus
-            ) {
-                setTab(0);
-            } else if (
-                newErrors.phone ||
-                newErrors.additionalPhone ||
-                newErrors.email
-            ) {
-                setTab(1);
-            } else {
-                setTab(2);
-            }
-
+            if (newErrors.lastName || newErrors.firstName || newErrors.recordStatus || newErrors.birthDate) setTab(0);
+            else if (newErrors.phone || newErrors.additionalPhone || newErrors.email) setTab(1);
+            else setTab(2);
             return;
         }
 
-        const updatedCitizen = {
-            ...draft,
-            lastName: draft.lastName.trim(),
-            firstName: draft.firstName.trim(),
-            middleName: draft.middleName.trim(),
-            phone: formatPhone(draft.phone),
-            additionalPhone: formatPhone(draft.additionalPhone),
-            email: draft.email.trim(),
-            registrationAddress: {
-                ...draft.registrationAddress,
-            },
-
-            residentialAddress: draft.sameAsRegistration
-                ? { ...draft.registrationAddress }
-                : { ...draft.residentialAddress },
-        };
-
+        const updatedCitizen = prepareCitizen(draft);
+        let newPhotoId;
+        let savedCitizen;
+        saving.current = true;
+        setIsSaving(true);
         try {
-            saveCitizen(updatedCitizen);
-            onSaved();
-            setDraft(null);
-            setErrors({});
-            setIsEditing(false);
+            if (photo) {
+                newPhotoId = await savePhoto(photo.file);
+                updatedCitizen.photoId = newPhotoId;
+                updatedCitizen.photoUrl = '';
+            } else if (photoRemoved) {
+                updatedCitizen.photoId = '';
+                updatedCitizen.photoUrl = '';
+            }
+            savedCitizen = isNew ? createCitizen(updatedCitizen) : updatedCitizen;
+            if (!isNew) saveCitizen(savedCitizen);
         } catch {
-            setErrors({
-                form: 'Не удалось сохранить изменения.',
-            });
+            if (newPhotoId) {
+                try {
+                    await deletePhoto(newPhotoId);
+                } catch {
+                    setErrors({ form: 'Не удалось сохранить данные и удалить временную фотографию.' });
+                    return;
+                }
+            }
+            setErrors({ form: 'Не удалось сохранить изменения.' });
+            return;
+        } finally {
+            saving.current = false;
+            setIsSaving(false);
         }
+
+        if ((photo || photoRemoved) && citizen.photoId) {
+            deletePhoto(citizen.photoId).catch(() => {});
+        }
+        setPhoto(null);
+        setPhotoRemoved(false);
+        setDraft(null);
+        setErrors({});
+        setIsEditing(false);
+        allowNavigation.current = true;
+        onSaved(savedCitizen);
     }
 
-    return { tab, setTab, isEditing, draft, errors, startEditing, cancelEditing, updateField, handleChange, handleSave };
+    return { tab, setTab, isEditing, draft, errors, startEditing, cancelEditing, updateField, handleChange, handleSave, photo, photoRemoved, photoError, selectPhoto, removePhoto, clearPhotoError, isSaving, isDirty, allowNavigation };
 }

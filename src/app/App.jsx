@@ -1,13 +1,13 @@
-import { Routes, Route } from 'react-router';
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router';
 
 import MainLayout from '../components/layout/MainLayout.jsx';
 import DashboardPage from '../pages/DashboardPage.jsx';
 import CitizensPage from '../pages/CitizensPage.jsx';
 import CitizenDetailPage from '../pages/CitizenDetailPage.jsx';
+import CitizenCreatePage from '../pages/CitizenCreatePage.jsx';
 
-export default function App() {
-  return (
-    <Routes>
+const router = createBrowserRouter(
+  createRoutesFromElements(
       <Route element={<MainLayout />}>
         <Route
           path="/"
@@ -20,6 +20,11 @@ export default function App() {
         />
 
         <Route
+          path="/citizens/new"
+          element={<CitizenCreatePage />}
+        />
+
+        <Route
           path="/citizens/:id"
           element={<CitizenDetailPage />}
         />
@@ -29,6 +34,9 @@ export default function App() {
           element={<h2>Страница не найдена</h2>}
         />
       </Route>
-    </Routes>
-  );
+  )
+);
+
+export default function App() {
+  return <RouterProvider router={router} />;
 }

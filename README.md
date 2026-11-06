@@ -1,16 +1,48 @@
-# React + Vite
+# Citizen Registry
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-приложение для ведения картотеки граждан и просмотра связанных обращений. Проект выполнен в рамках тестового задания для frontend-разработчика.
 
-Currently, two official plugins are available:
+Интерфейс адаптируется под компьютеры, планшеты и телефоны.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Обзор
 
-## React Compiler
+Главная страница показывает показатели и графики по гражданам и обращениям.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![Обзор с показателями и графиками](public/imgs/charts.png)
 
-## Expanding the ESLint configuration
+### Картотека граждан
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+В картотеке доступны поиск по ФИО, фильтры по региону и статусу, сортировка и переход между страницами.
+
+![Картотека граждан](public/imgs/citizens.png)
+
+### Карточка гражданина
+
+В карточке собраны основные сведения, контакты, адреса и связанные обращения. Карточку можно редактировать или удалить.
+
+![Карточка гражданина и обращения](public/imgs/CIT-001.png)
+
+### Добавление и редактирование
+
+При создании и редактировании можно заполнить данные и добавить фотографию. Форма проверяет поля и предупреждает о несохранённых изменениях.
+
+![Форма добавления гражданина](public/imgs/new.png)
+
+![Редактирование контактов гражданина](public/imgs/edit.png)
+
+## Технологии
+
+JavaScript, React, Vite, React Router, Material UI и MUI X.
+
+## Запуск
+
+```bash
+npm install
+npm run dev
+```
+
+## Данные
+
+Приложение использует вымышленные демонстрационные данные. Созданные и изменённые записи сохраняются в браузере, а фотографии — в IndexedDB. Сервер и база данных не подключены, поэтому данные доступны только в том браузере, где они были сохранены.
+
+Описание полей находится в [docs/data-model.md](docs/data-model.md).

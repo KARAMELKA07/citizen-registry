@@ -1,3 +1,4 @@
+import { createDemoCitizens } from './demoData.js';
 
 export const citizens = [
     {
@@ -115,4 +116,5 @@ export const citizens = [
         educationLevel: 'secondary',
         notes: '',
     },
+    ...createDemoCitizens(),
 ];

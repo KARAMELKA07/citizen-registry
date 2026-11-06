@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 
 import {
     Box,
+    Button,
     Chip,
     MenuItem,
     Paper,
@@ -13,9 +14,10 @@ import {
 
 import { DataGrid } from '@mui/x-data-grid';
 import { ruRU } from '@mui/x-data-grid/locales';
+import AddIcon from '@mui/icons-material/Add';
 
 import { getCitizens } from '../data/citizenStorage.js';
-import { appeals } from '../data/appeals.js';
+import { getAppeals } from '../data/appeals.js';
 import { statusStyles } from '../app/statusStyles.js';
 
 
@@ -91,6 +93,7 @@ const columns = [
 
 export default function CitizensPage() {
     const [citizens] = useState(getCitizens);
+    const appeals = getAppeals(citizens);
 
     const regions = [
         ...new Set(
@@ -132,8 +135,6 @@ export default function CitizensPage() {
 
     return (
         <Box sx={{ width: '100%', minWidth: 0 }}>
-
-
             <Paper
                 sx={{
                     p: { xs: 2, md: 3 },
@@ -145,7 +146,8 @@ export default function CitizensPage() {
                 <Stack
                     direction={{ xs: 'column', md: 'row' }}
                     spacing={2}
-                    sx={{ mb: 3 }}
+                    useFlexGap
+                    sx={{ mb: 3, flexWrap: 'wrap', alignItems: { md: 'center' } }}
                 >
                     <TextField
                         label="Поиск по ФИО"
@@ -184,6 +186,16 @@ export default function CitizensPage() {
                         <MenuItem value="active">Активные</MenuItem>
                         <MenuItem value="archived">Архивные</MenuItem>
                     </TextField>
+
+                    <Button
+                        component={Link}
+                        to="/citizens/new"
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        sx={{ width: { xs: '100%', md: 'auto' }, ml: { md: 'auto' } }}
+                    >
+                        Добавить гражданина
+                    </Button>
                 </Stack>
 
                 {/* Количество найденных граждан */}

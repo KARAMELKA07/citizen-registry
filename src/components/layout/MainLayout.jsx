@@ -44,6 +44,8 @@ export default function MainLayout() {
 
     if (pathname === '/citizens') {
         pageTitle = 'Картотека граждан';
+    } else if (pathname === '/citizens/new') {
+        pageTitle = 'Добавление гражданина';
     } else if (pathname.startsWith('/citizens/')) {
         pageTitle = 'Карточка гражданина';
     } else if (pathname !== '/') {
